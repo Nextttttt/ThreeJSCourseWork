@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 //Scene View =============================================
 const scene = new THREE.Scene();
@@ -42,13 +43,23 @@ loader.load('./models/Tank.glb', (gltf) => {
 });
 
 //Wall ==================================================
-let wall;
+let wall1, wall2;
 loader.load('./models/Wall.glb', (gltf) => {
 
-  wall = gltf.scene;
-  wall.position.y = -0.5;
-  wall.scale.set(0.5, 0.5, 0.5); 
-  scene.add(wall);
+  wall1 = gltf.scene;
+  wall1.position.x = -3;
+  wall1.scale.set(0.5, 0.5, 0.5); 
+  scene.add(wall1);
+});
+
+loader.load('./models/Wall.glb', (gltf) => {
+
+  wall2 = gltf.scene;
+  wall2.position.x = 4;
+  wall2.position.z = -5;
+  wall2.rotation.y = 30;
+  wall2.scale.set(0.5, 0.5, 0.5); 
+  scene.add(wall2);
 });
 
 const camRadius = 5;
@@ -80,7 +91,7 @@ window.addEventListener('keydown', (event) => {
     
     if (tank) {
       const speed = 0.5;
-      const forwardVector = new THREE.Vector3(0, 0, +speed);
+      const forwardVector = new THREE.Vector3(+speed, 0, 0);
       tank.position.add(forwardVector);
       camera.position.add(forwardVector);
     }
@@ -89,14 +100,25 @@ window.addEventListener('keydown', (event) => {
     
     if (tank) {
       const speed = 0.5;
-      const backwardVector = new THREE.Vector3(0, 0, -speed);
+      const backwardVector = new THREE.Vector3(-speed, 0, 0);
       tank.position.add(backwardVector);
       camera.position.add(backwardVector);
     }
   }
 });
+// Orbite ==============================================================================
 
-// Animation loop =====================================================
+const controls = new OrbitControls(camera, renderer.domElement);
+
+controls.enableZoom = true; // Enable zooming
+controls.enablePan = true;  // Enable panning
+controls.maxPolarAngle = Math.PI / 2; // Prevent the camera from going below the ground
+
+controls.rotateSpeed = 1.0;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 0.8;
+
+// Animation ==============================================================================
 const animate = () => {
   requestAnimationFrame(animate);
 
